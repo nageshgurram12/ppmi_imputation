@@ -104,5 +104,18 @@ def main():
                     
                     print(" [*] Test dataset Imputation finished!")
                 tf.reset_default_graph()
+
+def get_shapes(dataset):
+    def getsh(d, l):
+        if type(d) == list:
+            l.append(len(d))
+            getsh(d[0], l)
+        
+    batch = dataset.nextBatch()
+    for vec in batch:
+        shape = []
+        getsh(vec, shape)
+        print("shape : " + str(shape))
+        
 if __name__ == '__main__':
     main()

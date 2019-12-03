@@ -547,7 +547,7 @@ class WGAN(object):
         
         self.save(self.checkpoint_dir, counter)
 
-    def imputation(self,dataset,isTrain):
+    def imputation(self,dataset,isTrain, pat_ix=False):
         self.datasets=dataset
         self.datasets.shuffle(self.batch_size,True)
         tf.variables_initializer([self.z_need_tune]).run()
@@ -581,7 +581,7 @@ class WGAN(object):
                           % (batchid, impute_tune_time, self.impute_iter, time.time() - start_time, impute_loss))
                     self.writer.add_summary(summary_str, counter/10)
             #imputed=tf.multiply((1-self.m),impute_out)+data_x
-            self.save_imputation(imputed,batchid,data_x_lengths,data_deltaPre,data_y,isTrain)
+            self.save_imputation(imputed,batchid,data_x_lengths,data_deltaPre,data_y,isTrain, dataset)
             batchid+=1
             impute_tune_time=1
     @property
@@ -596,7 +596,7 @@ class WGAN(object):
             )
 
 
-    def save_imputation(self,impute_out,batchid,data_x_lengths,data_times,data_y,isTrain):
+    def save_imputation(self,impute_out,batchid,data_x_lengths,data_times,data_y,isTrain, dataset):
         #填充后的数据全是n_steps长度！，但只有data_x_lengths才是可用的
         if isTrain:
             imputation_dir="imputation_train_results"
@@ -619,11 +619,26 @@ class WGAN(object):
             resultFile.writelines(str(length)+",")
         resultFile.writelines("\r\n")
         # impute_out:ndarray
+        offset = (batchid-1)*self.batch_size
+        pat_ids_map = dataset.pat_ix if dataset.pat_ix else []
+        mean = dataset.mean
+        std = dataset.std
         for oneSeries in impute_out:
             resultFile.writelines("begin\r\n")
+            pat_id = None; event=0
+            if offset < len(pat_ids_map):
+                pat_id = pat_ids_map[offset]
+                offset += 1
             for oneClass in oneSeries:
+                if pat_id:
+                    resultFile.writelines(str(pat_id)+"," + str(event) + ",")
+                    event += 1
+                ix = 0
                 for i in oneClass.flat:
+                    if self.isNormal:
+                        i = round((i * std[ix]) + mean[ix], 2)
                     resultFile.writelines(str(i)+",")
+                    ix += 1
                 resultFile.writelines("\r\n")
             resultFile.writelines("end\r\n")
         resultFile.close()

@@ -420,10 +420,27 @@ class ReadPhysionetData():
             random.shuffle(c)
             self.x,self.y,self.m,self.deltaPre,self.x_lengths,self.lastvalues,self.fileNames,self.times,self.deltaSub,self.subvalues=zip(*c)
 
+
+def get_shapes(dataset):
+    def getsh(d, l):
+        if type(d) == list:
+            l.append(len(d))
+            getsh(d[0], l)
+        
+    for batch in dataset.nextBatch():
+        for vec in batch:
+            shape = []
+            getsh(vec, shape)
+            print("shape : " + str(shape))
+        
+        return
+        
 if __name__ == '__main__':
     
-    dt=ReadPhysionetData("/home/yonghong/ImputationAndPredictionUsingGAN/set-a/train", "/home/yonghong/ImputationAndPredictionUsingGAN/set-a/train/list.txt",isNormal=True,isSlicing=True)
-    dt.shuffle(128,False)
+    dt=ReadPhysionetData("../set-a/train", "../set-a/train/list.txt",isNormal=True,isSlicing=True)
+    dt.batchSize = 16
+    #dt.shuffle(128,False)
+    '''
     batchCount=1
     X_lengths=dt.x_lengths
     Time=dt.times[-144:-16]
@@ -433,6 +450,9 @@ if __name__ == '__main__':
         batchCount+=1
         if batchCount%100==0:
             print(files)
+    '''
+    get_shapes(dt)
+    
 def f():
     print("readData")
 
