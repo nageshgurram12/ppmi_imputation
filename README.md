@@ -2,11 +2,11 @@
  author : Nageswara Rao
  
  tensorflow version:1.7 python:2.7
- # create conda environment with tensorflow version 1.7
+ #### Create conda environment with tensorflow version 1.7
  1) conda create -n tensorflow1.7 python=2.7
  2) conda activate tensorflow1.7
  
-## The proposed method is a two-stage method. We first train GAN, then we train the input vector of the generator of GAN.
+### The proposed method is a two-stage method. We first train GAN, then we train the input vector of the generator of GAN.
 ### To run the code, go to the Gan_Imputation folder:
  Execute the PPMI_main.py file, then we will get 3 folders named as "checkpoint" (the saved models), G_results (the generated samples), imputation_test_results (the imputed test dataset) and imputation_train_results (the imputed train dataset).
 
