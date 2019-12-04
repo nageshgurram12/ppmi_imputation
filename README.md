@@ -1,5 +1,4 @@
 # Multivariate-Time-Series-Imputation-with-Generative-Adversarial-Networks for PPMI Data
- author : Nageswara Rao
  
  tensorflow version:1.7 python:2.7
  #### Create conda environment with tensorflow version 1.7
